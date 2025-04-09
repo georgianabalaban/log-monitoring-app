@@ -1,0 +1,12 @@
+{
+  "name": "log-monitoring-app",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "A simple Node.js CLI tool that analyzes job durations from a log file and reports warnings/errors based on thresholds.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "Georgiana Crijman",
+  "license": "MIT"
+}
