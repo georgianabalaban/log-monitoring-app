@@ -10,8 +10,8 @@ const outputFilePath = path.join(__dirname, "../../log_report.txt");
 
 export class LogProcessor {
   constructor() {
-    this.startTimes = {};
-    this.endTimes = {};
+    this.startTimes = new Map();
+    this.endTimes = new Map();
   }
 
   async processLogFile() {
@@ -25,6 +25,8 @@ export class LogProcessor {
       for await (const line of rl) {
         this.processLogLine(line);
       }
+
+      this.generateReport();
     } catch (err) {
       console.error("Error processing log file:", err);
     }
@@ -37,9 +39,45 @@ export class LogProcessor {
     const timeInSec = parseTimeToSeconds(timestamp);
 
     if (event === "START") {
-      this.startTimes = { pid: { time: timeInSec, description } };
+      this.startTimes.set(pid, { time: timeInSec, description });
     } else if (event === "END") {
-      this.endTimes = { pid: timeInSec };
+      this.endTimes.set(pid, timeInSec);
+    }
+  }
+
+  generateReport() {
+    const outputLines = ["--- Log Report ---"];
+
+    for (const [
+      pid,
+      { time: startTime, description },
+    ] of this.startTimes.entries()) {
+      if (!this.endTimes.has(pid)) continue;
+
+      const endTime = this.endTimes.get(pid);
+      const duration = endTime - startTime;
+      const status = this.getLogStatus(duration);
+      const durationStr = formatDuration(duration);
+
+      const logLine = `[${status}] PID ${pid} | ${description} | Duration: ${durationStr}`;
+      outputLines.push(logLine);
+    }
+
+    this.writeReport(outputLines);
+  }
+
+  getLogStatus(duration) {
+    if (duration > ERROR_THRESHOLD) return "ERROR";
+    if (duration > WARNING_THRESHOLD) return "WARNING";
+    return "OK";
+  }
+
+  writeReport(lines) {
+    try {
+      fs.writeFileSync(outputFilePath, lines.join("\n"), "utf-8");
+      console.log(`\nReport written to ${outputFilePath}`);
+    } catch (err) {
+      console.error("Error writing report:", err);
     }
   }
 }
