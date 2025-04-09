@@ -3,7 +3,7 @@ import readline from "readline";
 import path from "path";
 import { __dirname } from "../utils/pathUtils.js";
 import { parseTimeToSeconds, formatDuration } from "../utils/timeUtils.js";
-import { WARNING_THRESHOLD, ERROR_THRESHOLD } from "../config/thresholds.js";
+import { WARNING_THRESHOLD, ERROR_THRESHOLD } from "../utils/thresholds.js";
 
 const logFilePath = path.join(__dirname, "../../logs.log");
 const outputFilePath = path.join(__dirname, "../../log_report.txt");
@@ -25,8 +25,6 @@ export class LogProcessor {
       for await (const line of rl) {
         this.processLogLine(line);
       }
-
-      this.generateReport();
     } catch (err) {
       console.error("Error processing log file:", err);
     }
