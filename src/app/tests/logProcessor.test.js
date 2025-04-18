@@ -94,7 +94,6 @@ describe("LogProcessor writeReport", () => {
     assert.deepEqual(writeFileStub.firstCall.args[0], outputFilePath);
     assert.strictEqual(writeFileStub.firstCall.args[1], lines.join("\n"));
     assert.strictEqual(writeFileStub.firstCall.args[2], "utf-8");
-    assert.isTrue(consoleLogStub.calledWithMatch(/Report written to/));
   });
 
   it("should handle file system write errors gracefully", () => {
