@@ -91,9 +91,12 @@ describe("LogProcessor writeReport", () => {
     logProcessor.writeReport(lines);
 
     assert.isTrue(writeFileStub.calledOnce);
+    const [_, fileContent, encoding] = writeFileStub.firstCall.args;
+    const expectedContent = lines.join("\n");
     assert.deepEqual(writeFileStub.firstCall.args[0], outputFilePath);
-    assert.strictEqual(writeFileStub.firstCall.args[1], lines.join("\n"));
-    assert.strictEqual(writeFileStub.firstCall.args[2], "utf-8");
+    assert.strictEqual(writeFileStub.firstCall.args[1], expectedContent);
+    assert.strictEqual(writeFileStub.firstCall.args[2], encoding);
+    assert.strictEqual(fileContent, expectedContent);
   });
 
   it("should handle file system write errors gracefully", () => {
